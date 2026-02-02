@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SG-SST Platform - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
+      min-height: 100vh;
+    }
+    
+    .card-shadow {
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .card-shadow:hover {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .sidebar-item {
+      transition: all 0.2s ease;
+    }
+    
+    .sidebar-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(4px);
+    }
+    
+    .sidebar-item.active {
+      background: rgba(255, 255, 255, 0.15);
+      border-left: 3px solid white;
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.025em;
+    }
+    
+    .badge-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .badge-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .badge-info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .animate-slide-in {
+      animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    
+    .kpi-card {
+      opacity: 0;
+    }
+    
+    .kpi-card:nth-child(1) { animation-delay: 0.1s; }
+    .kpi-card:nth-child(2) { animation-delay: 0.2s; }
+    .kpi-card:nth-child(3) { animation-delay: 0.3s; }
+    .kpi-card:nth-child(4) { animation-delay: 0.4s; }
+    .kpi-card:nth-child(5) { animation-delay: 0.5s; }
+    .kpi-card:nth-child(6) { animation-delay: 0.6s; }
+  </style>
+</head>
+<body class="antialiased">
+  
+  <div class="flex h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 text-white flex-shrink-0">
+      <div class="flex flex-col h-full">
+        
+        <!-- Logo -->
+        <div class="px-6 py-6 border-b border-indigo-500/30">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <div>
+              <div class="font-bold text-lg">SG-SST</div>
+              <div class="text-xs text-indigo-200">Platform</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <a href="#" class="sidebar-item active flex items-center px-4 py-3 rounded-lg">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Dashboard
+          </a>
+          
+          <div class="pt-4 pb-2 px-4 text-xs font-semibold text-indigo-300 uppercase tracking-wider">
+            Gestión
+          </div>
+          
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            Empresas
+            <span class="ml-auto badge badge-info">5</span>
+          </a>
+          
+          <div class="pt-4 pb-2 px-4 text-xs font-semibold text-indigo-300 uppercase tracking-wider">
+            SG-SST
+          </div>
+          
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Actividades
+            <span class="ml-auto badge badge-warning">12</span>
+          </a>
+          
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            Evidencias
+          </a>
+          
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Autoevaluación
+          </a>
+          
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            Planes de Mejora
+          </a>
+          
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Calendario
+          </a>
+          
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Reportes
+          </a>
+        </nav>
+        
+        <!-- User -->
+        <div class="px-4 py-4 border-t border-indigo-500/30">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center font-semibold">
+              JP
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-sm truncate">Juan Pérez</div>
+              <div class="text-xs text-indigo-200 truncate">Super Admin</div>
+            </div>
+            <button class="text-indigo-200 hover:text-white">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Header -->
+      <header class="bg-white border-b border-gray-200 px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+            <p class="text-sm text-gray-500 mt-1">Empresa ABC S.A.S. - Mediana, Riesgo III</p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="relative">
+              <button class="relative p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              </button>
+            </div>
+            <div class="text-right">
+              <div class="text-sm font-medium text-gray-900">02 Feb 2026</div>
+              <div class="text-xs text-gray-500">14:30 COT</div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <main class="flex-1 overflow-y-auto p-8">
+        
+        <!-- KPIs Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          
+          <!-- KPI 1: Cumplimiento Global -->
+          <div class="kpi-card animate-slide-in bg-white rounded-xl p-6 card-shadow">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Cumplimiento Global</div>
+                <div class="text-3xl font-bold text-gray-900">78.5%</div>
+              </div>
+              <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+            <div class="progress-bar mb-2">
+              <div class="progress-fill" style="width: 78.5%"></div>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-gray-500">45 de 58 actividades</span>
+              <span class="badge badge-warning">Moderado</span>
+            </div>
+          </div>
+          
+          <!-- KPI 2: Actividades al Día -->
+          <div class="kpi-card animate-slide-in bg-white rounded-xl p-6 card-shadow">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Actividades al Día</div>
+                <div class="text-3xl font-bold text-gray-900">45</div>
+              </div>
+              <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+            <div class="text-sm text-gray-600 mb-2">Estado: Cerradas</div>
+            <div class="flex items-center text-xs">
+              <svg class="w-4 h-4 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd" />
+              </svg>
+              <span class="text-green-600 font-medium">+5 esta semana</span>
+            </div>
+          </div>
+          
+          <!-- KPI 3: Actividades Vencidas -->
+          <div class="kpi-card animate-slide-in bg-white rounded-xl p-6 card-shadow">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Actividades Vencidas</div>
+                <div class="text-3xl font-bold text-red-600">3</div>
+              </div>
+              <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+            <div class="text-sm text-gray-600 mb-2">Requieren atención inmediata</div>
+            <button class="text-xs text-red-600 font-medium hover:text-red-700">
+              Ver detalles →
+            </button>
+          </div>
+          
+          <!-- KPI 4: Evidencias Actualizadas -->
+          <div class="kpi-card animate-slide-in bg-white rounded-xl p-6 card-shadow">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Evidencias</div>
+                <div class="text-3xl font-bold text-gray-900">92</div>
+              </div>
+              <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+            <div class="text-sm text-gray-600 mb-2">
+              <span class="text-amber-600 font-medium">4</span> próximas a vencer
+            </div>
+            <div class="text-xs text-gray-500">Última carga: hace 2 horas</div>
+          </div>
+          
+          <!-- KPI 5: Hallazgos Abiertos -->
+          <div class="kpi-card animate-slide-in bg-white rounded-xl p-6 card-shadow">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Hallazgos Abiertos</div>
+                <div class="text-3xl font-bold text-gray-900">2</div>
+              </div>
+              <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+            </div>
+            <div class="text-sm text-gray-600 mb-2">Auditoría interna Q4 2025</div>
+            <div class="flex items-center text-xs space-x-2">
+              <span class="badge badge-danger">1 NC Mayor</span>
+              <span class="badge badge-warning">1 NC Menor</span>
+            </div>
+          </div>
+          
+          <!-- KPI 6: Acciones de Mejora -->
+          <div class="kpi-card animate-slide-in bg-white rounded-xl p-6 card-shadow">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Acciones de Mejora</div>
+                <div class="text-3xl font-bold text-gray-900">7/18</div>
+              </div>
+              <div class="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+            </div>
+            <div class="progress-bar mb-2">
+              <div class="progress-fill bg-gradient-to-r from-teal-500 to-teal-600" style="width: 39%"></div>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-gray-500">39% completado</span>
+              <span class="text-amber-600 font-medium">2 vencidas</span>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          
+          <!-- Tendencia de Cumplimiento -->
+          <div class="bg-white rounded-xl p-6 card-shadow">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900">Tendencia de Cumplimiento</h3>
+                <p class="text-sm text-gray-500 mt-1">Últimos 6 meses</p>
+              </div>
+              <button class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+                Ver más →
+              </button>
+            </div>
+            <canvas id="trendChart" class="w-full" height="200"></canvas>
+          </div>
+          
+          <!-- Distribución PHVA -->
+          <div class="bg-white rounded-xl p-6 card-shadow">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900">Distribución por Ciclo PHVA</h3>
+                <p class="text-sm text-gray-500 mt-1">Actividades completadas</p>
+              </div>
+            </div>
+            <canvas id="phvaChart" class="w-full" height="200"></canvas>
+          </div>
+          
+        </div>
+        
+        <!-- Recent Activities -->
+        <div class="bg-white rounded-xl card-shadow">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-gray-900">Actividades Recientes</h3>
+              <button class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+                Ver todas →
+              </button>
+            </div>
+          </div>
+          <div class="divide-y divide-gray-200">
+            
+            <!-- Activity Item -->
+            <div class="px-6 py-4 hover:bg-gray-50 transition">
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                      Política de SST actualizada
+                    </p>
+                    <span class="badge badge-success ml-4">Cerrado</span>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    Código: P-01 • Responsable: Juan Pérez
+                  </p>
+                  <div class="flex items-center mt-2 text-xs text-gray-400">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Completado hace 2 días
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Activity Item -->
+            <div class="px-6 py-4 hover:bg-gray-50 transition">
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                      Capacitación en trabajo seguro en alturas
+                    </p>
+                    <span class="badge badge-info ml-4">En Progreso</span>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    Código: H-15 • Responsable: María González
+                  </p>
+                  <div class="flex items-center mt-2 text-xs text-gray-400">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Vence: 15 Mar 2026 (41 días)
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Activity Item -->
+            <div class="px-6 py-4 hover:bg-gray-50 transition">
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                      Inspección de equipos EPP
+                    </p>
+                    <span class="badge badge-danger ml-4">Vencida</span>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    Código: V-08 • Responsable: Carlos Rodríguez
+                  </p>
+                  <div class="flex items-center mt-2 text-xs text-red-600 font-medium">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Vencida hace 5 días
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+    </div>
+    
+  </div>
+  
+  <script>
+    // Inicializar animaciones de KPIs
+    setTimeout(() => {
+      document.querySelectorAll('.kpi-card').forEach(card => {
+        card.classList.add('animate-slide-in');
+      });
+    }, 100);
+    
+    // Chart 1: Tendencia de Cumplimiento
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+      type: 'line',
+      data: {
+        labels: ['Sep 2025', 'Oct 2025', 'Nov 2025', 'Dic 2025', 'Ene 2026', 'Feb 2026'],
+        datasets: [{
+          label: '% Cumplimiento',
+          data: [72, 75, 76.5, 78.5, 77.6, 78.5],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          tension: 0.4,
+          fill: true,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 12,
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 13 },
+            displayColors: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 70,
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            },
+            grid: {
+              color: '#f3f4f6'
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    });
+    
+    // Chart 2: Distribución PHVA
+    const phvaCtx = document.getElementById('phvaChart').getContext('2d');
+    new Chart(phvaCtx, {
+      type: 'bar',
+      data: {
+        labels: ['P - Planear', 'H - Hacer', 'V - Verificar', 'A - Actuar'],
+        datasets: [
+          {
+            label: 'Completadas',
+            data: [12, 16, 13, 4],
+            backgroundColor: '#10b981',
+            borderRadius: 6
+          },
+          {
+            label: 'Pendientes',
+            data: [3, 4, 5, 1],
+            backgroundColor: '#f59e0b',
+            borderRadius: 6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 15,
+              usePointStyle: true,
+              font: { size: 12 }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 12,
+            displayColors: true
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: '#f3f4f6'
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    });
+  </script>
+  
+</body>
+</html>
